@@ -1,0 +1,23 @@
+services:
+  hyworld2:
+    build: .
+    image: hyworld2:latest
+    devices:
+      - /dev/kfd:/dev/kfd
+      - /dev/dri:/dev/dri
+    group_add:
+      - video
+      - render
+    security_opt:
+      - seccomp=unconfined
+    environment:
+      - HSA_OVERRIDE_GFX_VERSION=11.5.1
+      - HIP_VISIBLE_DEVICES=0
+      - PYTORCH_ROCM_ARCH=gfx1151
+      - HF_HOME=/cache/huggingface
+    volumes:
+      - ${HOME}/.cache/huggingface:/cache/huggingface
+      - ./input:/input
+      - ./output:/output
+    entrypoint: ["python", "-m", "hyworld2.worldrecon.pipeline"]
+    command: ["--input_path", "/input", "--output_path", "/output"]
